@@ -7,7 +7,9 @@ const carrito = [
     {nombre: 'Tablet', precio: 200},
     {nombre: 'Audifonos', precio: 300},
     {nombre: 'Teclado', precio: 400},
-    {nombre: 'Celular', precio: 700}
+    {nombre: 'Celular', precio: 700},
+    {nombre: 'Lavadora', precio: 800},
+    {nombre: 'Plancha', precio: 900},
 ];
 //ForEach
 // meses.forEach(function(mes){
@@ -23,13 +25,26 @@ const carrito = [
 
 //Includes
 let resultado = meses.includes('Enero'); //Devuelve un booleano
-console.log(resultado);
+// console.log(resultado);
 
 let busqueda = carrito.includes('Celular'); //Devuelve un booleano
-console.log(busqueda);
+// console.log(busqueda);
 
 //Some idel para arreglos de objetos
 let resultado2 = carrito.some(function(producto){
-    return producto.nombre === 'Celular';
+    return producto.nombre === 'Plancha';
 });
-console.log(resultado2);
+// console.log('Busqueda   '+resultado2);
+
+//Reduce
+let walthergaibor = carrito.reduce(function(total, producto){
+    return total + producto.precio;
+}, 0);
+// console.log(walthergaibor);
+
+//Filter
+let resultado3 = carrito.filter(function(producto){
+    return producto.precio != 400;
+});
+
+console.table(resultado3);

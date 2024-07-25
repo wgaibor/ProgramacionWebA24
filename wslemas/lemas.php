@@ -12,7 +12,7 @@ switch($arrayRequest['op']) {
         $arrayResponse = actualizarProducto($arrayRequest['data']);
         break;
     case 'obtenerProducto':
-        $arrayResponse = obtenerProducto($arrayRequest['data']);
+        $arrayResponse = obtenerProducto();
         break;
     case 'eliminarProducto':
         $arrayResponse = eliminarProducto($arrayRequest['data']);

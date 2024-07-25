@@ -42,10 +42,10 @@ function guardarProducto($arrayParametros)
     return $arrayResponse;
 }
 
-function actualizarProducto($arrayParametros) {
+function actualizarProductoPrecio($arrayParametros) {
     try {
         $arrayArgumento['idProducto'] = $arrayParametros['idProducto'];
-        $arrayRespuesta = obtenerProducto($arrayArgumento);
+        $arrayRespuesta = obtenerProductoXId($arrayArgumento);
         if(isset($arrayRespuesta['code']) && $arrayRespuesta['code'] == 500) {
             $arrayResponse = array("mensaje"    => "El registro no existe",
                                    "status"     => "ERROR",
@@ -80,7 +80,57 @@ function actualizarProducto($arrayParametros) {
     }
 }
 
-function obtenerProducto($arrayParametros) {
+function actualizarProducto($arrayParametros) {
+    try {
+        $arrayArgumento['idProducto'] = $arrayParametros['idProducto'];
+        $arrayRespuesta = obtenerProductoXId($arrayArgumento);
+        if(isset($arrayRespuesta['code']) && $arrayRespuesta['code'] == 500) {
+            $arrayResponse = array("mensaje"    => "El registro no existe",
+                                   "status"     => "ERROR",
+                                   "code"       => 500);
+            return $arrayResponse;
+        }
+        $arrayResponse = array();
+        require "database.php";
+
+        $strSql = "UPDATE info_producto
+                    SET marca = ?,
+                    modelo = ?,
+                    descripcion = ?,
+                    precio = ?,
+                    imagen = ?
+                    WHERE idProducto = ?";
+        $oracion= $db->prepare($strSql);
+        $oracion->bind_param('sssssi', $strMarca,
+                                       $strModelo,
+                                       $strDescripcion,
+                                       $strPrecio,
+                                       $strImagen,
+                                   $intIdProducto);
+        $strMarca       = $arrayParametros['marca'];
+        $strModelo      = $arrayParametros['modelo'];
+        $strDescripcion = $arrayParametros['descripcion'];
+        $strPrecio      = $arrayParametros['precio'];
+        $strImagen      = $arrayParametros['imagen'];
+        $intIdProducto  = $arrayParametros['idProducto'];
+
+        $boolEliminar   = $oracion->execute();
+        if($boolEliminar) {
+            $arrayResponse = array("mensaje"    => "Se actualizo el registro correctamente",
+                                   "status"     => "OK",
+                                   "code"       => 200);
+        } else {
+            $arrayResponse = array("mensaje"    => "No se actualizo el registro",
+                                   "status"     => "ERROR",
+                                   "code"       => 500);
+        }
+        return $arrayResponse;
+    } catch (\Throwable $th) {
+        echo 'actualizarProducto()   '.$th->getMessage();
+    }
+}
+
+function obtenerProductoXId($arrayParametros) {
     try {
         $arrayResponse = array();
         require "database.php";
@@ -105,10 +155,32 @@ function obtenerProducto($arrayParametros) {
     }
 }
 
+function obtenerProducto() {
+    try {
+        $arrayResponse = array();
+        require "database.php";
+
+        $strSql = " SELECT * FROM info_producto WHERE estado = ?";
+        $stmt   = $db->prepare($strSql);
+        $stmt->bind_param('s', $strEstado);
+        $strEstado = "Activo";
+        $stmt->execute();
+        $arrayResultado         = $stmt->get_result();
+        $arrayResponse['data']  = $arrayResultado->fetch_all(MYSQLI_ASSOC);
+        if(empty($arrayResponse['data'])) {
+            $arrayResponse = array("mensaje"    => "No trajo registro",
+                                   "status"     => "ERROR",
+                                   "code"       => 500);
+        }
+        return $arrayResponse;
+    } catch (\Throwable $th) {
+        echo 'obtenerProducto()   '.$th->getMessage();
+    }
+}
 function eliminarProducto($arrayParametros) {
     try {
         $arrayArgumento['idProducto'] = $arrayParametros['idProducto'];
-        $arrayRespuesta = obtenerProducto($arrayArgumento);
+        $arrayRespuesta = obtenerProductoXId($arrayArgumento);
         if(isset($arrayRespuesta['code']) && $arrayRespuesta['code'] == 500) {
             $arrayResponse = array("mensaje"    => "El registro no existe",
                                    "status"     => "ERROR",
